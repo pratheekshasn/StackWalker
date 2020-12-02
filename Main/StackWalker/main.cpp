@@ -28,8 +28,8 @@
 #define THREADCOUNT 5
 HANDLE                                                       ghThreads[THREADCOUNT];
 HANDLE                                                       profThread;
-std::map<std::string, std::vector<std::vector<std::string>>> callTrees;
-std::map<std::string, int>                                   functionCounts;
+std::map<std::string, std::vector<std::vector<std::string>>> gCallTrees;
+std::map<std::string, int>                                   gFunctionCounts;
 
 //  Forward declarations:
 HANDLE ListProcessThreads(DWORD dwOwnerPID);
@@ -37,7 +37,7 @@ void   printError(TCHAR* msg);
 HANDLE GetMainThreadId(DWORD PID);
 void   Func1();
 void   StackWalkTest(HANDLE threadHandle, std::string threadName);
-void   CreateGraph(std::map<std::string, std::vector<std::vector<std::string>>> callTrees);
+void   CreateGraph(std::map<std::string, std::vector<std::vector<std::string>>> gCallTrees);
 
 // secure-CRT_functions are only available starting with VC8
 #if _MSC_VER < 1400
@@ -217,27 +217,27 @@ void Func5(HANDLE threadHandle, std::string threadName)
     //}
 
     // Create a dict<threadName (or VIName), List<List>> Each thread/VI has a list of callStacks. Then JSONify it.
-    //std::map<std::string, std::vector<std::vector<std::string>>> callTrees;
+    //std::map<std::string, std::vector<std::vector<std::string>>> gCallTrees;
 
     //std::string threadName;
-    if (callTrees.find(threadName) != callTrees.end())
+    if (gCallTrees.find(threadName) != gCallTrees.end())
     {
-      auto value = callTrees[threadName];
+      auto value = gCallTrees[threadName];
       value.push_back(sw.callStackList);
-      callTrees.erase(threadName);
-      callTrees.insert({threadName, value});
+      gCallTrees.erase(threadName);
+      gCallTrees.insert({threadName, value});
 
-      int currentCount = functionCounts[threadName];
-      functionCounts.erase(threadName);
-      functionCounts.insert({threadName, currentCount + 1});
+      int currentCount = gFunctionCounts[threadName];
+      gFunctionCounts.erase(threadName);
+      gFunctionCounts.insert({threadName, currentCount + 1});
     }
     else
     {
       std::vector<std::vector<std::string>> newValue;
       newValue.push_back(sw.callStackList);
-      callTrees.insert({threadName, newValue});
+      gCallTrees.insert({threadName, newValue});
 
-      functionCounts.insert({threadName, 1});
+      gFunctionCounts.insert({threadName, 1});
     }
   }
   //std::cout << "Top: " << sw.callStack.top() << std::endl;
@@ -645,7 +645,7 @@ int main(int argc, _TCHAR* argv[])
   //WaitForAllThreads();
   WaitForProfilerThread();
 
-  CreateGraph(callTrees);
+  CreateGraph(gCallTrees);
 
   return 0;
 }
