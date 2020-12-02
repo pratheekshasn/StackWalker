@@ -84,13 +84,13 @@
 
 #include "StackWalker.h"
 
+#include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <tchar.h>
 #include <windows.h>
 #pragma comment(lib, "version.lib") // for "VerQueryValue"
 #pragma warning(disable : 4826)
-
 
 // If VC7 and later, then use the shipped 'dbghelp.h'-file
 #pragma pack(push, 8)
@@ -313,6 +313,7 @@ public:
           // now check if the file exists:
           if (GetFileAttributes(szTemp) != INVALID_FILE_ATTRIBUTES)
           {
+            //printf("Library path: %s\n", szTemp);
             m_hDbhHelp = LoadLibrary(szTemp);
           }
         }
@@ -334,6 +335,7 @@ public:
           // now check if the file exists:
           if (GetFileAttributes(szTemp) != INVALID_FILE_ATTRIBUTES)
           {
+            //printf("Library path: %s\n", szTemp);
             m_hDbhHelp = LoadLibrary(szTemp);
           }
         }
@@ -344,6 +346,7 @@ public:
           _tcscat_s(szTemp, _T("\\Debugging Tools for Windows 64-Bit\\dbghelp.dll"));
           if (GetFileAttributes(szTemp) != INVALID_FILE_ATTRIBUTES)
           {
+            //printf("Library path: %s\n", szTemp);
             m_hDbhHelp = LoadLibrary(szTemp);
           }
         }
@@ -351,7 +354,14 @@ public:
       }
     }
     if (m_hDbhHelp == NULL) // if not already loaded, try to load a default-one
+    {
       m_hDbhHelp = LoadLibrary(_T("dbghelp.dll"));
+      /*TCHAR pathBuf[MAX_PATH];
+      if (auto len = GetModuleFileName(m_hDbhHelp, pathBuf, _countof(pathBuf)))
+      {
+        printf("Library path: %s\n", pathBuf);
+      }*/
+    }
     if (m_hDbhHelp == NULL)
       return FALSE;
     pSI = (tSI)GetProcAddress(m_hDbhHelp, "SymInitialize");
@@ -467,9 +477,9 @@ public:
   tSFTA pSFTA;
 
   // SymGetLineFromAddr64()
-  typedef BOOL(__stdcall* tSGLFA)(IN HANDLE hProcess,
-                                  IN DWORD64 dwAddr,
-                                  OUT PDWORD pdwDisplacement,
+  typedef BOOL(__stdcall* tSGLFA)(IN HANDLE            hProcess,
+                                  IN DWORD64           dwAddr,
+                                  OUT PDWORD           pdwDisplacement,
                                   OUT PIMAGEHLP_LINE64 Line);
   tSGLFA pSGLFA;
 
@@ -478,7 +488,7 @@ public:
   tSGMB pSGMB;
 
   // SymGetModuleInfo64()
-  typedef BOOL(__stdcall* tSGMI)(IN HANDLE hProcess,
+  typedef BOOL(__stdcall* tSGMI)(IN HANDLE  hProcess,
                                  IN DWORD64 dwAddr,
                                  OUT IMAGEHLP_MODULE64_V3* ModuleInfo);
   tSGMI pSGMI;
@@ -488,9 +498,9 @@ public:
   tSGO pSGO;
 
   // SymGetSymFromAddr64()
-  typedef BOOL(__stdcall* tSGSFA)(IN HANDLE hProcess,
-                                  IN DWORD64 dwAddr,
-                                  OUT PDWORD64 pdwDisplacement,
+  typedef BOOL(__stdcall* tSGSFA)(IN HANDLE              hProcess,
+                                  IN DWORD64             dwAddr,
+                                  OUT PDWORD64           pdwDisplacement,
                                   OUT PIMAGEHLP_SYMBOL64 Symbol);
   tSGSFA pSGSFA;
 
@@ -499,12 +509,12 @@ public:
   tSI pSI;
 
   // SymLoadModule64()
-  typedef DWORD64(__stdcall* tSLM)(IN HANDLE hProcess,
-                                   IN HANDLE hFile,
-                                   IN PSTR ImageName,
-                                   IN PSTR ModuleName,
+  typedef DWORD64(__stdcall* tSLM)(IN HANDLE  hProcess,
+                                   IN HANDLE  hFile,
+                                   IN PSTR    ImageName,
+                                   IN PSTR    ModuleName,
                                    IN DWORD64 BaseOfDll,
-                                   IN DWORD SizeOfDll);
+                                   IN DWORD   SizeOfDll);
   tSLM pSLM;
 
   // SymSetOptions()
@@ -879,6 +889,8 @@ StackWalker::StackWalker(DWORD dwProcessId, HANDLE hProcess)
   this->m_dwProcessId = dwProcessId;
   this->m_szSymPath = NULL;
   this->m_MaxRecursionCount = 1000;
+  gLogFile.open("C:\\temp\\gLogFile.txt", std::ios ::app);
+  printf("%d", gLogFile.is_open());
 }
 StackWalker::StackWalker(int options, LPCSTR szSymPath, DWORD dwProcessId, HANDLE hProcess)
 {
@@ -895,6 +907,8 @@ StackWalker::StackWalker(int options, LPCSTR szSymPath, DWORD dwProcessId, HANDL
   else
     this->m_szSymPath = NULL;
   this->m_MaxRecursionCount = 1000;
+  gLogFile.open("C:\\temp\\gLogFile.txt", std::ios ::app);
+  printf("%d", gLogFile.is_open());
 }
 
 StackWalker::~StackWalker()
@@ -905,6 +919,7 @@ StackWalker::~StackWalker()
   if (this->m_sw != NULL)
     delete this->m_sw;
   this->m_sw = NULL;
+  gLogFile.close();
 }
 
 BOOL StackWalker::LoadModules()
@@ -1374,6 +1389,39 @@ void StackWalker::OnLoadModule(LPCSTR    img,
   OnOutput(buffer);
 }
 
+std::string GetEscapedQuotedString(CHAR line[])
+{
+  char* chars_array = strtok(line, "\\");
+  //char* escaped = (char*)malloc(4096);
+  std::string       escaped;
+  std::stringstream ss;
+
+  ss << "\"";
+
+  while (chars_array)
+  {
+    //strcat(escaped, chars_array);
+    ss << chars_array;
+    chars_array = strtok(NULL, "\\");
+  }
+  /*strcat("\"", escaped);
+  strcat(escaped, "\"");*/
+
+  ss << "\"";
+  return ss.str();
+}
+
+std::string ReplaceAll(std::string str, const std::string& from, const std::string& to)
+{
+  size_t start_pos = 0;
+  while ((start_pos = str.find(from, start_pos)) != std::string::npos)
+  {
+    str.replace(start_pos, from.length(), to);
+    start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+  }
+  return str;
+}
+
 void StackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry& entry)
 {
   CHAR   buffer[STACKWALK_MAX_NAMELEN];
@@ -1394,12 +1442,19 @@ void StackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry& ent
       MyStrCpy(entry.lineFileName, STACKWALK_MAX_NAMELEN, "(filename not available)");
       if (entry.moduleName[0] == 0)
         MyStrCpy(entry.moduleName, STACKWALK_MAX_NAMELEN, "(module-name not available)");
-      _snprintf_s(buffer, maxLen, "%p (%s): %s: %s\n", (LPVOID)entry.offset, entry.moduleName,
+      _snprintf_s(buffer, maxLen, "%p (%s): %s: %s", (LPVOID)entry.offset, entry.moduleName,
                   entry.lineFileName, entry.name);
+      gLogFile << "\"" << ReplaceAll(buffer, "\\", "\\\\").c_str() << "\",";
     }
     else
-      _snprintf_s(buffer, maxLen, "%s (%d): %s\n", entry.lineFileName, entry.lineNumber,
+    {
+      _snprintf_s(buffer, maxLen, "%s (%d): %s", entry.lineFileName, entry.lineNumber,
                   entry.name);
+      //AddToCallTree(buffer);
+      callStack.push(std::string(buffer));
+      callStackList.push_back(std::string(buffer));
+      gLogFile << "\"" << ReplaceAll(buffer, "\\", "\\\\") << "\"";
+    }
     buffer[STACKWALK_MAX_NAMELEN - 1] = 0;
     OnOutput(buffer);
   }

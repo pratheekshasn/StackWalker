@@ -46,6 +46,12 @@
 #if _MSC_VER >= 1900
 #pragma warning(disable : 4091)
 #endif
+#include <set>
+#include <stack>
+#include <vector>
+#include <map>
+#include <fstream>
+#include <fstream>
 
 // special defines for VC5/6 (if no actual PSDK is installed):
 #if _MSC_VER < 1300
@@ -56,6 +62,29 @@ typedef unsigned __int64 SIZE_T, *PSIZE_T;
 typedef unsigned long SIZE_T, *PSIZE_T;
 #endif
 #endif // _MSC_VER < 1300
+           // Call tree code:
+
+class Node // Should be private. TODO
+{
+public:
+  std::string       name;
+  int               count;
+  std::vector<Node> children;
+
+  Node(std::string name, int count) // Add to createdNodes when creating a node.
+  {
+    this->name = name;
+    this->count = count;
+
+    //createdNodes.insert(name);
+  }
+
+  Node() {}
+
+  void AddChild(Node child) { this->children.push_back(child); }
+
+  void IncrementCount() { this->count++; }
+};
 
 class StackWalkerInternal; // forward
 class StackWalker
@@ -121,6 +150,15 @@ public:
   );
 
   BOOL ShowObject(LPVOID pObject);
+
+  Node                       callTree;
+  static std::set<std::string, int> createdNodes;
+  //void                       AddToCallTree(char* name);
+
+  std::stack<std::string> callStack;
+  std::vector<std::string> callStackList;
+  //static std::map<std::string, std::vector<std::vector<std::string>>> callTrees;
+  std::ofstream gLogFile;
 
 #if _MSC_VER >= 1300
   // due to some reasons, the "STACKWALK_MAX_NAMELEN" must be declared as "public"
