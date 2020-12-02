@@ -64,27 +64,27 @@ typedef unsigned long SIZE_T, *PSIZE_T;
 #endif // _MSC_VER < 1300
            // Call tree code:
 
-class Node // Should be private. TODO
-{
-public:
-  std::string       name;
-  int               count;
-  std::vector<Node> children;
-
-  Node(std::string name, int count) // Add to createdNodes when creating a node.
-  {
-    this->name = name;
-    this->count = count;
-
-    //createdNodes.insert(name);
-  }
-
-  Node() {}
-
-  void AddChild(Node child) { this->children.push_back(child); }
-
-  void IncrementCount() { this->count++; }
-};
+//class Node // Should be private. TODO
+//{
+//public:
+//  std::string       name;
+//  int               count;
+//  std::vector<Node> children;
+//
+//  Node(std::string name, int count) // Add to createdNodes when creating a node.
+//  {
+//    this->name = name;
+//    this->count = count;
+//
+//    //createdNodes.insert(name);
+//  }
+//
+//  Node() {}
+//
+//  void AddChild(Node child) { this->children.push_back(child); }
+//
+//  void IncrementCount() { this->count++; }
+//};
 
 class StackWalkerInternal; // forward
 class StackWalker
@@ -151,7 +151,7 @@ public:
 
   BOOL ShowObject(LPVOID pObject);
 
-  Node                       callTree;
+  //Node                       callTree;
   static std::set<std::string, int> createdNodes;
   //void                       AddToCallTree(char* name);
 

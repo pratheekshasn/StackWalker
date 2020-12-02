@@ -27,6 +27,7 @@
 
 #define THREADCOUNT 5
 HANDLE ghThreads[THREADCOUNT];
+HANDLE profThread;
 
 //  Forward declarations:
 HANDLE ListProcessThreads(DWORD dwOwnerPID);
@@ -35,6 +36,7 @@ HANDLE GetMainThreadId(DWORD PID);
 void   Func1();
 void   StackWalkTest(HANDLE threadHandle, std::string threadName);
 std::map<std::string, std::vector<std::vector<std::string>>> callTrees;
+void CreateGraph(std::map<std::string, std::vector<std::vector<std::string>>> callTrees);
 
 // secure-CRT_functions are only available starting with VC8
 #if _MSC_VER < 1400
@@ -88,7 +90,7 @@ DWORD WINAPI StartProfile(LPVOID lpParam)
 {
   UNREFERENCED_PARAMETER(lpParam);
 
-  for (size_t i = 0; i < 10; i++)
+  for (size_t j = 0; j < 2; j++)
   {
     for (int i = 0; i < THREADCOUNT; i++)
     {
@@ -133,7 +135,7 @@ void CreateProfilerThread()
   // TODO: More complex scenarios may require use of a parameter
   //   to the thread procedure, such as an event per thread to
   //   be used for synchronization.
-  HANDLE profThread = CreateThread(NULL,         // default security
+  profThread = CreateThread(NULL,         // default security
                                    0,            // default stack size
                                    StartProfile, // name of the thread function
                                    NULL,         // no thread parameters
@@ -274,6 +276,31 @@ int WaitForAllThreads()
   // terminated.
   DWORD dwWaitResult = WaitForMultipleObjects(THREADCOUNT, // number of handles in array
                                               ghThreads,   // array of thread handles
+                                              TRUE,        // wait until all are signaled
+                                              INFINITE);
+
+  switch (dwWaitResult)
+  {
+      // All thread objects were signaled
+    case WAIT_OBJECT_0:
+      printf("All threads ended, cleaning up for application exit...\n");
+      printf("Returned %d\n", dwWaitResult);
+      break;
+
+      // An error occurred
+    default:
+      printf("WaitForMultipleObjects failed (%d)\n", GetLastError());
+      return 1;
+  }
+  return 0;
+}
+
+int WaitForProfilerThread()
+{
+  // The handle for each thread is signaled when the thread is
+  // terminated.
+  DWORD dwWaitResult = WaitForMultipleObjects(1, // number of handles in array
+                                              &profThread,   // array of thread handles
                                               TRUE,        // wait until all are signaled
                                               INFINITE);
 
@@ -608,7 +635,10 @@ int main(int argc, _TCHAR* argv[])
   //  strcpy_s(szTemp, 1000, "A");
   //#endif
 
-  WaitForAllThreads();
+  //WaitForAllThreads();
+  WaitForProfilerThread();
+
+  CreateGraph(callTrees);
 
   return 0;
 }

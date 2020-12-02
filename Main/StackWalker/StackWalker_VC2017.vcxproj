@@ -350,11 +350,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Node.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="JSONSerialiser.cpp" />
+    <ClCompile Include="GraphCreator.cpp" />
     <ClCompile Include="StackWalker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="c_plus_plus_serializer.h" />
+    <ClInclude Include="Node.h" />
     <ClInclude Include="StackWalker.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
