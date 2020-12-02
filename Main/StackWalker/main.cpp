@@ -26,8 +26,10 @@
 #define EXCEPTION_FILTER_TEST
 
 #define THREADCOUNT 5
-HANDLE ghThreads[THREADCOUNT];
-HANDLE profThread;
+HANDLE                                                       ghThreads[THREADCOUNT];
+HANDLE                                                       profThread;
+std::map<std::string, std::vector<std::vector<std::string>>> callTrees;
+std::map<std::string, int>                                   functionCounts;
 
 //  Forward declarations:
 HANDLE ListProcessThreads(DWORD dwOwnerPID);
@@ -35,8 +37,7 @@ void   printError(TCHAR* msg);
 HANDLE GetMainThreadId(DWORD PID);
 void   Func1();
 void   StackWalkTest(HANDLE threadHandle, std::string threadName);
-std::map<std::string, std::vector<std::vector<std::string>>> callTrees;
-void CreateGraph(std::map<std::string, std::vector<std::vector<std::string>>> callTrees);
+void   CreateGraph(std::map<std::string, std::vector<std::vector<std::string>>> callTrees);
 
 // secure-CRT_functions are only available starting with VC8
 #if _MSC_VER < 1400
@@ -136,11 +137,11 @@ void CreateProfilerThread()
   //   to the thread procedure, such as an event per thread to
   //   be used for synchronization.
   profThread = CreateThread(NULL,         // default security
-                                   0,            // default stack size
-                                   StartProfile, // name of the thread function
-                                   NULL,         // no thread parameters
-                                   0,            // default startup flags
-                                   &dwThreadID);
+                            0,            // default stack size
+                            StartProfile, // name of the thread function
+                            NULL,         // no thread parameters
+                            0,            // default startup flags
+                            &dwThreadID);
 
   if (profThread == NULL)
   {
@@ -225,12 +226,18 @@ void Func5(HANDLE threadHandle, std::string threadName)
       value.push_back(sw.callStackList);
       callTrees.erase(threadName);
       callTrees.insert({threadName, value});
+
+      int currentCount = functionCounts[threadName];
+      functionCounts.erase(threadName);
+      functionCounts.insert({threadName, currentCount + 1});
     }
     else
     {
       std::vector<std::vector<std::string>> newValue;
       newValue.push_back(sw.callStackList);
       callTrees.insert({threadName, newValue});
+
+      functionCounts.insert({threadName, 1});
     }
   }
   //std::cout << "Top: " << sw.callStack.top() << std::endl;
@@ -299,8 +306,8 @@ int WaitForProfilerThread()
 {
   // The handle for each thread is signaled when the thread is
   // terminated.
-  DWORD dwWaitResult = WaitForMultipleObjects(1, // number of handles in array
-                                              &profThread,   // array of thread handles
+  DWORD dwWaitResult = WaitForMultipleObjects(1,           // number of handles in array
+                                              &profThread, // array of thread handles
                                               TRUE,        // wait until all are signaled
                                               INFINITE);
 
