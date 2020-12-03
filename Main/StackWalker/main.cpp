@@ -152,16 +152,7 @@ void CreateProfilerThread()
 
 void Func5(HANDLE threadHandle, std::string threadName)
 {
-  //DWORD  pid = 16752;
-  //HANDLE processHandle = OpenProcess(SYNCHRONIZE, TRUE, pid);
-  //StackWalkerToConsole_DifferentProcess sw(36532, processHandle);
-  /*StackWalker sw(StackWalker::OptionsAll,
-                 ";C:\\LWOL\\Stuff\\Profiler\\Process\\ProfilerTarget\\Debug;C:\\LWOL\\Stuff\\Profiler\\Process\\ProfilerTarget\\x64\\Debug", pid, processHandle);*/
   StackWalkerToConsole sw;
-  //HANDLE threadHandle = GetMainThreadId(pid); //ListProcessThreads(pid);
-  /*for (size_t i = 0; i < THREADCOUNT; i++)
-  {*/
-  //HANDLE threadHandle = ghThreads[0];
   SuspendThread(threadHandle);
   CONTEXT c;
   memset(&c, 0, sizeof(CONTEXT));
@@ -182,44 +173,6 @@ void Func5(HANDLE threadHandle, std::string threadName)
     // Merge this sub-tree with the main tree.
     // Secondary storage for the info.
 
-    //std::string rootName = sw.callStack.top();
-    ////if (StackWalker::createdNodes.find(rootName) != StackWalker::createdNodes.end())
-    ////{
-    ////  // Increment. ? Since they're all different sub-trees, maybe increment won't be needed.
-    ////}
-    //Node root(rootName, 1);
-
-    //sw.callStack.pop();
-
-    //Node* parent = &root;
-
-    //for (size_t i = 0; !sw.callStack.empty(); i++)
-    //{
-    //  std::string nodeName = sw.callStack.top();
-    //  Node        child(nodeName, 1);
-    //  parent->AddChild(child);
-    //  *parent = child;
-    //  //free(&child);
-    //  sw.callStack.pop();
-    //}
-
-    //Node* rootAnother = new Node(sw.callStackList[0], 1);
-
-    //Node* parentNode = rootAnother;
-    //Node* child;
-    ////(sw.callStackList[sw.callStackList.size() - 1], 1);
-
-    //for (size_t i = 1; i < sw.callStackList.size(); i++)
-    //{
-    //  child = new Node(sw.callStackList[i], 1);
-    //  rootAnother->AddChild(*child);
-    //  rootAnother = child;
-    //}
-
-    // Create a dict<threadName (or VIName), List<List>> Each thread/VI has a list of callStacks. Then JSONify it.
-    //std::map<std::string, std::vector<std::vector<std::string>>> gCallTrees;
-
-    //std::string threadName;
     if (gCallTrees.find(threadName) != gCallTrees.end())
     {
       auto value = gCallTrees[threadName];
@@ -240,17 +193,8 @@ void Func5(HANDLE threadHandle, std::string threadName)
       gFunctionCounts.insert({threadName, 1});
     }
   }
-  //std::cout << "Top: " << sw.callStack.top() << std::endl;
-
-  //for (size_t i = 0; i < sw.callStack.size(); i++)
-  //{
-  //  //std::cout << sw.callStack.top();
-  //}
+  
   ResumeThread(threadHandle);
-  //}
-
-  /*StackWalkerToConsole sw;
-  sw.ShowCallstack(ghThreads[0]);*/
 }
 
 HANDLE GetMainThreadId(DWORD PID)
