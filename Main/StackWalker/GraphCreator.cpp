@@ -165,7 +165,7 @@ Node* CreateTree(std::string key, std::vector<std::vector<std::string>> values)
 //  }
 //}
 
-void CreateGraph(std::map<std::string, std::vector<std::vector<std::string>>> callTrees)
+void CreateGraphAndJSON(std::map<std::string, std::vector<std::vector<std::string>>> callTrees)
 {
   std::vector<Node*>                                                     forest;
   std::map<std::string, std::vector<std::vector<std::string>>>::iterator iter = callTrees.begin();

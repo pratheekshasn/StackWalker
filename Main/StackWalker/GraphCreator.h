@@ -10,6 +10,6 @@
 Node GetBranch(std::vector<std::string> callStack);
 //Node* GetBranch(Node* parent, std::vector<std::string> callStack);
 Node* CreateTree(std::string key, std::vector<std::vector<std::string>> values);
-void  CreateGraph(std::map<std::string, std::vector<std::vector<std::string>>> callTrees);
+void  CreateGraphAndJSON(std::map<std::string, std::vector<std::vector<std::string>>> callTrees);
 
 #endif // !_GraphCreator_H_

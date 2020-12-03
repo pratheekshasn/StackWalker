@@ -589,7 +589,7 @@ int main(int argc, _TCHAR* argv[])
   //WaitForAllThreads();
   WaitForProfilerThread();
 
-  CreateGraph(gCallTrees);
+  CreateGraphAndJSON(gCallTrees);
 
 
 
