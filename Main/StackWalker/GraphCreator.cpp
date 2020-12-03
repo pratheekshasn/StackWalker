@@ -113,7 +113,10 @@ Node MergeNodes(Node* root)
         Node* nodeToErase = &root->children[i];
         for (size_t j = 0; j < nodeToErase->children.size(); j++)
         {
-          node->AddChild(nodeToErase->children[j]);
+          Node* adoptedChild = &nodeToErase->children[j];
+          //adoptedChild->parents.erase()
+          adoptedChild->parents.push_back(*node);
+          node->AddChild(*adoptedChild);
         }
         root->children.erase(root->children.begin() + i);
       }
