@@ -83,7 +83,7 @@ typedef unsigned long SIZE_T, *PSIZE_T;
 //
 //  void AddChild(Node child) { this->children.push_back(child); }
 //
-//  void IncrementCount() { this->count++; }
+//  void SetCount() { this->count++; }
 //};
 
 class StackWalkerInternal; // forward

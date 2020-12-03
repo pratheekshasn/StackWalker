@@ -24,5 +24,7 @@ public:
 
   void AddChild(Node child) { this->children.push_back(child); }
 
-  void IncrementCount() { this->count++; }
+  void SetCount(int count) { this->count = count; }
+
+  int GetChildCount() { return this->children.size(); }
 };
