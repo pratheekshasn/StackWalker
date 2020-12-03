@@ -27,4 +27,9 @@ public:
   void SetCount(int count) { this->count = count; }
 
   int GetChildCount() { return this->children.size(); }
+
+  std::string SerialiseToJSON();
+  std::string GetSerialisedName();
+  std::string GetSerialisedCount();
+  std::string GetSerialisedChildren();
 };

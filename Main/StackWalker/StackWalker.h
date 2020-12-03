@@ -51,7 +51,6 @@
 #include <vector>
 #include <map>
 #include <fstream>
-#include <fstream>
 
 // special defines for VC5/6 (if no actual PSDK is installed):
 #if _MSC_VER < 1300

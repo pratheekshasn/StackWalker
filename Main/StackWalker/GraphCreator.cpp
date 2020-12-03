@@ -1,5 +1,8 @@
 #include "GraphCreator.h"
+#include <fstream>
 #include <set>
+
+std::ofstream JSONFile;
 
 Node GetBranch(std::vector<std::string> callStack)
 {
@@ -41,17 +44,17 @@ Node GetBranch(std::vector<std::string> callStack)
 //    return parent;
 //}
 
-int GetMaxListLength(std::vector<Node> children)
-{
-  int max = -1;
-
-  for (size_t i = 0; i < children.size(); i++)
-  {
-    if (children[i].children.size() > max)
-      max = children[i].children.size();
-  }
-  return max;
-}
+//int GetMaxListLength(std::vector<Node> children)
+//{
+//  int max = -1;
+//
+//  for (size_t i = 0; i < children.size(); i++)
+//  {
+//    if (children[i].children.size() > max)
+//      max = children[i].children.size();
+//  }
+//  return max;
+//}
 
 int max(int a, int b)
 {
@@ -138,6 +141,9 @@ Node* CreateTree(std::string key, std::vector<std::vector<std::string>> values)
 
   // Merge nodes in branch.
   *root = MergeNodes(root);
+  std::string JSON = root->SerialiseToJSON();
+
+  JSONFile << JSON;
   return root;
 }
 
@@ -164,13 +170,21 @@ void CreateGraph(std::map<std::string, std::vector<std::vector<std::string>>> ca
   std::vector<Node*>                                                     forest;
   std::map<std::string, std::vector<std::vector<std::string>>>::iterator iter = callTrees.begin();
 
+  JSONFile.open("C:\\temp\\JSON.json", std::ios ::app);
+
+  JSONFile << "[";
   while (iter != callTrees.end())
   {
     std::string                           key = iter->first;
     std::vector<std::vector<std::string>> value = iter->second;
-    forest.push_back(CreateTree(key, value));
+    Node*                                 tree = CreateTree(key, value);
+    forest.push_back(tree);
     iter++;
+
+    if (iter != callTrees.end())
+      JSONFile << ",";
   }
+  JSONFile << "]";
 
   // This forest has repeated nodes, merge the tree.
   // Set count for number of occurances. Count seems okay for root VI nodes.
@@ -178,4 +192,5 @@ void CreateGraph(std::map<std::string, std::vector<std::vector<std::string>>> ca
   /*Node* forestRoot = new Node("root", -1);
   forestRoot->children = forest;*/
   //SetCount(forest);
+  //forest[0]).SerialiseToJSON();
 }
