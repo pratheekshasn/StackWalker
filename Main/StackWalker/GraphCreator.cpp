@@ -1,7 +1,4 @@
-#include "Node.h"
-#include <map>
-#include <string>
-#include <vector>
+#include "GraphCreator.h"
 
 Node GetBranch(std::vector<std::string> callStack)
 {

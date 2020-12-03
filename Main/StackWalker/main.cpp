@@ -21,6 +21,7 @@
 #include <thread>
 #include <tlhelp32.h>
 #include <windows.h>
+#include "GraphCreator.h"
 
 #define UNHANDLED_EXCEPTION_TEST
 #define EXCEPTION_FILTER_TEST
@@ -37,7 +38,6 @@ void   printError(TCHAR* msg);
 HANDLE GetMainThreadId(DWORD PID);
 void   Func1();
 void   StackWalkTest(HANDLE threadHandle, std::string threadName);
-void   CreateGraph(std::map<std::string, std::vector<std::vector<std::string>>> gCallTrees);
 
 // secure-CRT_functions are only available starting with VC8
 #if _MSC_VER < 1400

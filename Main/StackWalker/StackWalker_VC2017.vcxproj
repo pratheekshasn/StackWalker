@@ -358,6 +358,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="c_plus_plus_serializer.h" />
+    <ClInclude Include="GraphCreator.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="StackWalker.h" />
   </ItemGroup>
