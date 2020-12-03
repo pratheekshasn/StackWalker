@@ -11,6 +11,7 @@ Node GetBranch(std::vector<std::string> callStack)
   for (size_t i = 1; i < callStack.size(); i++)
   {
     parent = new Node(callStack[i], 1);
+    leaf->SetParent(*parent);
     parent->AddChild(*leaf);
     leaf = parent;
   }

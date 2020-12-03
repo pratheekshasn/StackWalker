@@ -8,6 +8,7 @@ public:
   std::string       name;
   int               count;
   std::vector<Node> children;
+  std::vector<Node> parents;
 
   Node(std::string name, int count) // Add to createdNodes when creating a node.
   {
@@ -16,6 +17,8 @@ public:
 
     //createdNodes.insert(name);
   }
+
+  void SetParent(Node parent) { this->parents.push_back(parent); }
 
   Node() {}
 
