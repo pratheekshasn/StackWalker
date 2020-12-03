@@ -18,7 +18,7 @@
 //  return *parent;
 //}
 
-Node* CreateIfNotExists(Node* parent, std::string nodeName)
+Node* CreateIfNotExists(Node parent, std::string nodeName)
 {
   // Add code for checking if node already exists.
   return new Node(nodeName, 1);
@@ -28,13 +28,16 @@ Node* GetBranch(Node* parent, std::vector<std::string> callStack)
 {
   if (callStack.size() == 0)
     return NULL; // NULL?
-  Node* child = CreateIfNotExists(parent, callStack[callStack.size() - 1]);
+  Node* child = CreateIfNotExists(*parent, callStack[callStack.size() - 1]);
   callStack.pop_back();
   child = GetBranch(child, callStack);
-  if (child == NULL)
+  if (child != NULL)
+  {
+    child->SetCount(child->GetChildCount());
+    return child;
+  }
+  else
     return parent;
-
-  child->SetCount(child->GetChildCount());
 }
 
 Node* CreateTree(std::string key, std::vector<std::vector<std::string>> values)
