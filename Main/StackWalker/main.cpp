@@ -10,6 +10,7 @@
  *
  **********************************************************************/
 
+#include "GraphCreator.h"
 #include "stackwalker.h"
 #include <DbgHelp.h>
 #include <chrono>
@@ -21,7 +22,6 @@
 #include <thread>
 #include <tlhelp32.h>
 #include <windows.h>
-#include "GraphCreator.h"
 
 #define UNHANDLED_EXCEPTION_TEST
 #define EXCEPTION_FILTER_TEST
@@ -90,6 +90,8 @@ DWORD WINAPI ThreadProc(LPVOID lpParam)
 DWORD WINAPI StartProfile(LPVOID lpParam)
 {
   UNREFERENCED_PARAMETER(lpParam);
+
+  HANDLE thread = GetCurrentThread();
 
   for (size_t j = 0; j < 2; j++)
   {
@@ -193,7 +195,7 @@ void Func5(HANDLE threadHandle, std::string threadName)
       gFunctionCounts.insert({threadName, 1});
     }
   }
-  
+
   ResumeThread(threadHandle);
 }
 
@@ -590,8 +592,6 @@ int main(int argc, _TCHAR* argv[])
   WaitForProfilerThread();
 
   CreateGraphAndJSON(gCallTrees);
-
-
 
   return 0;
 }

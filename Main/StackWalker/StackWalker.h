@@ -63,14 +63,14 @@ typedef unsigned long SIZE_T, *PSIZE_T;
 #endif // _MSC_VER < 1300
            // Call tree code:
 
-//class Node // Should be private. TODO
+//class CallTreeNode // Should be private. TODO
 //{
 //public:
 //  std::string       name;
 //  int               count;
-//  std::vector<Node> children;
+//  std::vector<CallTreeNode> children;
 //
-//  Node(std::string name, int count) // Add to createdNodes when creating a node.
+//  CallTreeNode(std::string name, int count) // Add to createdNodes when creating a node.
 //  {
 //    this->name = name;
 //    this->count = count;
@@ -78,9 +78,9 @@ typedef unsigned long SIZE_T, *PSIZE_T;
 //    //createdNodes.insert(name);
 //  }
 //
-//  Node() {}
+//  CallTreeNode() {}
 //
-//  void AddChild(Node child) { this->children.push_back(child); }
+//  void AddChild(CallTreeNode child) { this->children.push_back(child); }
 //
 //  void SetCount() { this->count++; }
 //};
@@ -150,7 +150,7 @@ public:
 
   BOOL ShowObject(LPVOID pObject);
 
-  //Node                       callTree;
+  //CallTreeNode                       callTree;
   static std::set<std::string, int> createdNodes;
   //void                       AddToCallTree(char* name);
 

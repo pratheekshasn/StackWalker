@@ -30,7 +30,7 @@
     <ClCompile Include="GraphCreator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Node.cpp">
+    <ClCompile Include="CallTreeNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,10 +41,10 @@
     <ClInclude Include="c_plus_plus_serializer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Node.h">
+    <ClInclude Include="GraphCreator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GraphCreator.h">
+    <ClInclude Include="CallTreeNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

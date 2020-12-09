@@ -1,9 +1,9 @@
-#include "Node.h"
+#include "CallTreeNode.h"
 #include <sstream>
 
 std::string ReplaceAll(std::string str, const std::string& from, const std::string& to);
 
-std::string Node::SerialiseToJSON()
+std::string CallTreeNode::SerialiseToJSON()
 {
   //char* serialisedString = "";
   /*sprintf(serialisedString, "{\"name\":\"%s\",\"count\":%d,\"children\":[%s]}", GetSerialisedName(),
@@ -17,12 +17,13 @@ std::string Node::SerialiseToJSON()
   serialisedString << "{";
   serialisedString << GetSerialisedName() << ",";
   serialisedString << GetSerialisedCount() << ",";
+  //serialisedString << GetSerialisedPercentage() << ",";
   serialisedString << GetSerialisedChildren();
   serialisedString << "}";
   return serialisedString.str();
 }
 
-std::string Node::GetSerialisedName()
+std::string CallTreeNode::GetSerialisedName()
 {
   std::stringstream serialisedString;
   serialisedString << "\"name\":\"" << ReplaceAll(this->name, "\\", "\\\\")
@@ -30,14 +31,21 @@ std::string Node::GetSerialisedName()
   return serialisedString.str();
 }
 
-std::string Node::GetSerialisedCount()
+std::string CallTreeNode::GetSerialisedCount()
 {
   std::stringstream serialisedString;
   serialisedString << "\"count\":" << this->count;
   return serialisedString.str();
 }
 
-std::string Node::GetSerialisedChildren()
+std::string CallTreeNode::GetSerialisedPercentage()
+{
+  std::stringstream serialisedString;
+  serialisedString << "\"percentage\":" << this->percentage;
+  return serialisedString.str();
+}
+
+std::string CallTreeNode::GetSerialisedChildren()
 {
   if (this->children.size() == 0)
   {

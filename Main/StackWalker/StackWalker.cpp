@@ -1442,14 +1442,18 @@ void StackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry& ent
       MyStrCpy(entry.lineFileName, STACKWALK_MAX_NAMELEN, "(filename not available)");
       if (entry.moduleName[0] == 0)
         MyStrCpy(entry.moduleName, STACKWALK_MAX_NAMELEN, "(module-name not available)");
-      _snprintf_s(buffer, maxLen, "%p (%s): %s: %s", (LPVOID)entry.offset, entry.moduleName,
-                  entry.lineFileName, entry.name);
+      /*_snprintf_s(buffer, maxLen, "%p (%s): %s: %s", (LPVOID)entry.offset, entry.moduleName,
+                  entry.lineFileName, entry.name);*/
+      //_snprintf_s(buffer, maxLen, "%s (%d): %s", entry.lineFileName, entry.lineNumber, entry.name);
+      _snprintf_s(buffer, maxLen, "%s : %s", entry.lineFileName, entry.name);
+      callStack.push(std::string(buffer));
       gLogFile << "\"" << ReplaceAll(buffer, "\\", "\\\\").c_str() << "\",";
     }
     else
     {
-      _snprintf_s(buffer, maxLen, "%s (%d): %s", entry.lineFileName, entry.lineNumber,
-                  entry.name);
+      /*_snprintf_s(buffer, maxLen, "%s (%d): %s", entry.lineFileName, entry.lineNumber,
+                  entry.name);*/
+      _snprintf_s(buffer, maxLen, "%s : %s", entry.lineFileName, entry.name);
       //AddToCallTree(buffer);
       callStack.push(std::string(buffer));
       callStackList.push_back(std::string(buffer));
