@@ -557,36 +557,10 @@ int f(int i)
 
 int main(int argc, _TCHAR* argv[])
 {
-  /*printf("\n\n\nShow an object:\n\n\n");
-  GlobalIntTest();
-
-  printf("\n\n\nShow a function pointer:\n\n\n");
-  GlobalFunctionPointerTest();*/
-
-  //map_custom_class_example();
-
   printf("\n\n\nShow a simple callstack of the current thread:\n\n\n");
-  CreateMultipleThreads();
+  CreateMultipleThreads(); // Create these as a placeholder for LV threads.
 
-  //StackWalker::gLogFile << "{";
   CreateProfilerThread();
-
-  //StackWalkTest();
-  //
-  //#ifdef EXCEPTION_FILTER_TEST
-  //  printf("\n\n\nShow a the callstack from inside an exception-handler:\n\n\n");
-  //  TestExceptionWalking();
-  //#endif
-  //
-  //#ifdef UNHANDLED_EXCEPTION_TEST
-  //  printf("\n\n\nCatch unhandled exceptions and show the callstack:\n\n\n");
-  //  // This will only work, if the program is *not* started under a debugger
-  //  // If the program is running under a debugger, the debugger will catch this exception ;)
-  //  InitUnhandledExceptionFilter();
-  //  //f(0);  // endless recursion
-  //  char* szTemp = (char*)1;
-  //  strcpy_s(szTemp, 1000, "A");
-  //#endif
 
   //WaitForAllThreads();
   WaitForProfilerThread();
