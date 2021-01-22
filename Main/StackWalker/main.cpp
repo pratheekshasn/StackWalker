@@ -27,10 +27,11 @@
 #define EXCEPTION_FILTER_TEST
 
 #define THREADCOUNT 5
-HANDLE                                                       ghThreads[THREADCOUNT];
-HANDLE                                                       profThread;
-std::map<std::string, std::vector<std::vector<std::string>>> gCallTrees;
-std::map<std::string, int>                                   gFunctionCounts;
+HANDLE ghThreads[THREADCOUNT];
+HANDLE profThread;
+std::map<std::string, std::vector<std::vector<std::string>>>
+                           gCallTrees; // <threadName, callStackList>
+std::map<std::string, int> gFunctionCounts;
 
 //  Forward declarations:
 HANDLE ListProcessThreads(DWORD dwOwnerPID);
@@ -555,17 +556,91 @@ int f(int i)
 
 //void map_custom_class_example();
 
+// Simple implementation of an additional output to the console:
+class MyStackWalker : public StackWalker
+{
+public:
+  MyStackWalker() : StackWalker() {}
+  MyStackWalker(DWORD dwProcessId, HANDLE hProcess) : StackWalker(dwProcessId, hProcess) {}
+  virtual void OnOutput(LPCSTR szText)
+  {
+    printf(szText);
+    StackWalker::OnOutput(szText);
+  }
+};
+
+// Test for callstack of threads for an other process:
+void TestDifferentProcess(DWORD dwProcessId) // copied from demo project.
+{
+  HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, dwProcessId);
+
+  if (hProcess == NULL)
+    return;
+
+  HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, dwProcessId);
+  if (hSnap == INVALID_HANDLE_VALUE)
+    return;
+
+  THREADENTRY32 te;
+  memset(&te, 0, sizeof(te));
+  te.dwSize = sizeof(te);
+  if (Thread32First(hSnap, &te) == FALSE)
+  {
+    CloseHandle(hSnap);
+    return;
+  }
+
+  // Initialize StackWalker...
+  MyStackWalker sw(dwProcessId, hProcess);
+  sw.LoadModules();
+  // now enum all thread for this processId
+  do
+  {
+    if (te.th32OwnerProcessID != dwProcessId)
+      continue;
+    HANDLE hThread = OpenThread(THREAD_ALL_ACCESS, FALSE, te.th32ThreadID);
+    if (hThread == NULL)
+      continue;
+    char szTemp[100];
+    sprintf(szTemp, "\r\nThreadID: %d\r\n", te.th32ThreadID);
+    sw.OnOutput(szTemp); // output the threadId
+    CONTEXT c;
+    memset(&c, 0, sizeof(CONTEXT));
+    c.ContextFlags = CONTEXT_FULL;
+    SuspendThread(hThread);
+    if (GetThreadContext(hThread, &c) != FALSE)
+    {
+      sw.ShowCallstack(hThread, &c); // Without passing context, it says filename not available, but shows filename, function name, line number.
+    }
+    ResumeThread(hThread);
+    CloseHandle(hThread);
+  } while (Thread32Next(hSnap, &te) != FALSE);
+}
+
+//void CollectCallStackForDifferentProcess()
+//{
+//  DWORD pid = 22296;
+//  HANDLE processHandle = OpenProcess(PROCESS_ALL_ACCESS, TRUE, pid);
+//
+//  DWORD  tid = 22296;
+//  HANDLE threadHandle = OpenThread(, TRUE, tid);
+//  //StackWalker sw(63, "C:\\LWOL\\Stuff\\Profiler\\Process\\ProfilerTarget\\Debug", pid, processHandle);
+//  StackWalker sw(pid, processHandle);
+//  sw.ShowCallstack();
+//}
+
 int main(int argc, _TCHAR* argv[])
 {
-  printf("\n\n\nShow a simple callstack of the current thread:\n\n\n");
-  CreateMultipleThreads(); // Create these as a placeholder for LV threads.
+  //printf("\n\n\nShow a simple callstack of the current thread:\n\n\n");
+  //CreateMultipleThreads(); // Create these as a placeholder for LV threads.
 
-  CreateProfilerThread();
+  //CreateProfilerThread();
 
-  //WaitForAllThreads();
-  WaitForProfilerThread();
+  ////WaitForAllThreads();
+  //WaitForProfilerThread();
 
-  CreateGraphAndJSON(gCallTrees);
-
+  //CreateGraphAndJSON(gCallTrees);
+  //CollectCallStackForDifferentProcess();
+  TestDifferentProcess(3588);
   return 0;
 }
