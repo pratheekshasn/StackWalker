@@ -604,15 +604,15 @@ void TestDifferentProcess(DWORD dwProcessId) // copied from demo project.
     char szTemp[100];
     sprintf(szTemp, "\r\nThreadID: %d\r\n", te.th32ThreadID);
     sw.OnOutput(szTemp); // output the threadId
-    CONTEXT c;
+    /*CONTEXT c;
     memset(&c, 0, sizeof(CONTEXT));
     c.ContextFlags = CONTEXT_FULL;
     SuspendThread(hThread);
     if (GetThreadContext(hThread, &c) != FALSE)
-    {
-      sw.ShowCallstack(hThread, &c); // Without passing context, it says filename not available, but shows filename, function name, line number.
-    }
-    ResumeThread(hThread);
+    {*/
+    sw.ShowCallstack(hThread); //, &c); // Without passing context, it says filename not available, but shows filename, function name, line number.
+    /*}
+    ResumeThread(hThread);*/
     CloseHandle(hThread);
   } while (Thread32Next(hSnap, &te) != FALSE);
 }
