@@ -94,7 +94,7 @@ DWORD WINAPI StartProfile(LPVOID lpParam)
 
   HANDLE thread = GetCurrentThread();
 
-  for (size_t j = 0; j < 2; j++)
+  for (size_t j = 0; j < 10; j++)
   {
     for (int i = 0; i < THREADCOUNT; i++)
     {
@@ -631,16 +631,16 @@ void TestDifferentProcess(DWORD dwProcessId) // copied from demo project.
 
 int main(int argc, _TCHAR* argv[])
 {
-  //printf("\n\n\nShow a simple callstack of the current thread:\n\n\n");
-  //CreateMultipleThreads(); // Create these as a placeholder for LV threads.
+  printf("\n\n\nShow a simple callstack of the current thread:\n\n\n");
+  CreateMultipleThreads(); // Create these as a placeholder for LV threads.
 
-  //CreateProfilerThread();
+  CreateProfilerThread();
 
-  ////WaitForAllThreads();
-  //WaitForProfilerThread();
+  //WaitForAllThreads();
+  WaitForProfilerThread();
 
-  //CreateGraphAndJSON(gCallTrees);
+  CreateGraphAndJSON(gCallTrees);
   //CollectCallStackForDifferentProcess();
-  TestDifferentProcess(3588);
+  //TestDifferentProcess(21924);
   return 0;
 }

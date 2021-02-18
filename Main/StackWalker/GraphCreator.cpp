@@ -1,6 +1,7 @@
 #include "GraphCreator.h"
 #include <fstream>
 #include <set>
+#include <iostream>
 
 std::ofstream JSONFile;
 
@@ -113,6 +114,8 @@ CallTreeNode MergeNodes(CallTreeNode* root)
       {
         if (funcName == root->children[i].name)
           duplicateIndices.push_back((int)i);
+        if (duplicateIndices.size() > root->children.size())
+          std::cout << "?!" << std::endl;
       }
 
       //CallTreeNode* first = mergables[0];
@@ -120,7 +123,7 @@ CallTreeNode MergeNodes(CallTreeNode* root)
       CallTreeNode* node = &(root->children[duplicateIndices[0]]);
       node->SetCount(max(1, (int)duplicateIndices.size()));
 
-      for (size_t i = 1; i < duplicateIndices.size(); i++)
+      for (size_t i = (duplicateIndices.size() - 1); i >= 1; i--)
       {
         // Add children of the node that will get erased.
 
