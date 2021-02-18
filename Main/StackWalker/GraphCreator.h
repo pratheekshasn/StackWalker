@@ -9,7 +9,7 @@
 
 CallTreeNode GetBranch(std::vector<std::string> callStack);
 //CallTreeNode* GetBranch(CallTreeNode* parent, std::vector<std::string> callStack);
-CallTreeNode* CreateTree(std::string key, std::vector<std::vector<std::string>> values);
+CallTreeNode CreateTree(std::string key, std::vector<std::vector<std::string>> values);
 void  CreateGraphAndJSON(std::map<std::string, std::vector<std::vector<std::string>>> callTrees);
 CallTreeNode SetPercentages(CallTreeNode* root, int rootSampleCount);
 

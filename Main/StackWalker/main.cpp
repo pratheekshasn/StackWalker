@@ -22,6 +22,7 @@
 #include <thread>
 #include <tlhelp32.h>
 #include <windows.h>
+#include <chrono>
 
 #define UNHANDLED_EXCEPTION_TEST
 #define EXCEPTION_FILTER_TEST
@@ -610,7 +611,8 @@ void TestDifferentProcess(DWORD dwProcessId) // copied from demo project.
     SuspendThread(hThread);
     if (GetThreadContext(hThread, &c) != FALSE)
     {*/
-    sw.ShowCallstack(hThread); //, &c); // Without passing context, it says filename not available, but shows filename, function name, line number.
+    sw.ShowCallstack(
+        hThread); //, &c); // Without passing context, it says filename not available, but shows filename, function name, line number.
     /*}
     ResumeThread(hThread);*/
     CloseHandle(hThread);
@@ -629,17 +631,52 @@ void TestDifferentProcess(DWORD dwProcessId) // copied from demo project.
 //  sw.ShowCallstack();
 //}
 
+void CreateFakeCallTree()
+{
+  for (int i = 97; i < 103; i++)
+  {
+    std::vector<std::vector<std::string>> callStacks;
+    for (int k = (i - 97); k < (i - 97 + 10); k++)
+    {
+      std::vector<std::string> callStack;
+      for (int j = k; j < (k+20); j++)
+      {
+        callStack.push_back(std::to_string(j)); // 5 elements in each call stack
+      }
+      for (size_t x = 0; x < 20; x++)
+      {
+        callStacks.push_back(callStack); // List of call stacks per key
+      }
+      callStack.push_back("42");
+      callStacks.push_back(callStack); // List of call stacks per key
+    }
+    std::string key;
+    key = char(i);
+    gCallTrees.insert({key, callStacks});
+  }
+}
+
 int main(int argc, _TCHAR* argv[])
 {
-  printf("\n\n\nShow a simple callstack of the current thread:\n\n\n");
-  CreateMultipleThreads(); // Create these as a placeholder for LV threads.
+  //printf("\n\n\nShow a simple callstack of the current thread:\n\n\n");
+  //CreateMultipleThreads(); // Create these as a placeholder for LV threads.
 
-  CreateProfilerThread();
+  //CreateProfilerThread();
 
-  //WaitForAllThreads();
-  WaitForProfilerThread();
+  ////WaitForAllThreads();
+  //WaitForProfilerThread();
+
+  CreateFakeCallTree();
+
+  std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
   CreateGraphAndJSON(gCallTrees);
+
+  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+  std::cout << "Time difference = "
+            << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]"
+            << std::endl;
   //CollectCallStackForDifferentProcess();
   //TestDifferentProcess(21924);
   return 0;

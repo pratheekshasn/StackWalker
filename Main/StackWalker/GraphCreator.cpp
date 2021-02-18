@@ -127,15 +127,23 @@ CallTreeNode MergeNodes(CallTreeNode* root)
       {
         // Add children of the node that will get erased.
 
-        CallTreeNode* nodeToErase = &root->children[i];
+        CallTreeNode* nodeToErase = &root->children[duplicateIndices[i]];
         for (size_t j = 0; j < nodeToErase->children.size(); j++)
         {
+          //std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
           CallTreeNode* adoptedChild = &nodeToErase->children[j];
           //adoptedChild->parents.erase()
-          adoptedChild->parents.push_back(*node);
+          //adoptedChild->parents.push_back(*node); // Why am I not using SetParent()? // Uncomment later
           node->AddChild(*adoptedChild);
+
+          /*std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+          std::cout << "Time difference = "
+                    << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()
+                    << "[µs]" << std::endl;*/
         }
-        root->children.erase(root->children.begin() + i);
+        root->children.erase(root->children.begin() + duplicateIndices[i]);
       }
     }
   }
@@ -151,23 +159,23 @@ CallTreeNode MergeNodes(CallTreeNode* root)
   return *root;
 }
 
-CallTreeNode* CreateTree(std::string key, std::vector<std::vector<std::string>> values)
+CallTreeNode CreateTree(std::string key, std::vector<std::vector<std::string>> values)
 {
-  CallTreeNode* root = new CallTreeNode(key, (int)values.size());
+  CallTreeNode root(key, (int)values.size());
   //std::vector<std::vector<std::string>>::iterator iter = values.begin();
   for (size_t i = 0; i < values.size(); i++)
   {
     if (values[i].size() > 0)
     {
       auto branch = GetBranch(values[i]);
-      root->AddChild(branch); // Added * here.
+      (&(root))->AddChild(branch); // Added * here.
     }
   }
 
   // Merge nodes in branch.
-  *root = MergeNodes(root);
+  root = MergeNodes(&root);
 
-  *root = SetPercentages(root, root->count);
+  root = SetPercentages(&root, (&(root))->count);
 
   return root;
 }
@@ -192,7 +200,7 @@ CallTreeNode* CreateTree(std::string key, std::vector<std::vector<std::string>> 
 
 void CreateGraphAndJSON(std::map<std::string, std::vector<std::vector<std::string>>> callTrees)
 {
-  std::vector<CallTreeNode*>                                             forest;
+  std::vector<CallTreeNode>                                             forest;
   std::map<std::string, std::vector<std::vector<std::string>>>::iterator iter = callTrees.begin();
 
   JSONFile.open("C:\\temp\\JSON.json", std::ios ::app);
@@ -202,12 +210,13 @@ void CreateGraphAndJSON(std::map<std::string, std::vector<std::vector<std::strin
   {
     std::string                           key = iter->first;
     std::vector<std::vector<std::string>> value = iter->second;
-    CallTreeNode*                         tree = CreateTree(key, value);
-    tree->percentage = (tree->count / (int)callTrees.size()) * 100.0;
+    CallTreeNode                         tree = CreateTree(key, value);
+    (&tree)->percentage = (tree.count / (int)callTrees.size()) * 100.0;
     forest.push_back(tree);
 
-    std::string JSON = tree->SerialiseToJSON();
+    std::string JSON = tree.SerialiseToJSON();
 
+    //delete tree;
     JSONFile << JSON;
 
     iter++;

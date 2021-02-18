@@ -5,9 +5,9 @@
 class CallTreeNode
 {
 public:
-  std::string       name;
-  int               count = 0;
-  double            percentage = 0;
+  std::string               name;
+  int                       count = 0;
+  double                    percentage = 0;
   std::vector<CallTreeNode> children;
   std::vector<CallTreeNode> parents;
 
@@ -22,6 +22,15 @@ public:
   void SetParent(CallTreeNode parent) { this->parents.push_back(parent); }
 
   CallTreeNode() {}
+
+  ~CallTreeNode()
+  {
+    ///*for (size_t i = 0; i < this->children.size(); i++)
+    //{
+    //  delete (&this->children[i]);
+    //}*/
+    //free(this);
+  }
 
   void AddChild(CallTreeNode child) { this->children.push_back(child); }
 
