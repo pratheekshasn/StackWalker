@@ -889,8 +889,8 @@ StackWalker::StackWalker(DWORD dwProcessId, HANDLE hProcess)
   this->m_dwProcessId = dwProcessId;
   this->m_szSymPath = NULL;
   this->m_MaxRecursionCount = 1000;
-  gLogFile.open("C:\\temp\\gLogFile.txt", std::ios ::app);
-  printf("%d", gLogFile.is_open());
+  //gLogFile.open("C:\\temp\\gLogFile.txt", std::ios ::app);
+  //printf("%d", gLogFile.is_open());
 }
 StackWalker::StackWalker(int options, LPCSTR szSymPath, DWORD dwProcessId, HANDLE hProcess)
 {
@@ -907,8 +907,8 @@ StackWalker::StackWalker(int options, LPCSTR szSymPath, DWORD dwProcessId, HANDL
   else
     this->m_szSymPath = NULL;
   this->m_MaxRecursionCount = 1000;
-  gLogFile.open("C:\\temp\\gLogFile.txt", std::ios ::app);
-  printf("%d", gLogFile.is_open());
+  //gLogFile.open("C:\\temp\\gLogFile.txt", std::ios ::app);
+  //printf("%d", gLogFile.is_open());
 }
 
 StackWalker::~StackWalker()
@@ -919,7 +919,7 @@ StackWalker::~StackWalker()
   if (this->m_sw != NULL)
     delete this->m_sw;
   this->m_sw = NULL;
-  gLogFile.close();
+  //gLogFile.close();
 }
 
 BOOL StackWalker::LoadModules()
@@ -1446,8 +1446,8 @@ void StackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry& ent
                   entry.lineFileName, entry.name);*/
       //_snprintf_s(buffer, maxLen, "%s (%d): %s", entry.lineFileName, entry.lineNumber, entry.name);
       _snprintf_s(buffer, maxLen, "%s : %s (%d)", entry.lineFileName, entry.name, entry.lineNumber);
-      callStack.push(std::string(buffer));
-      gLogFile << "\"" << ReplaceAll(buffer, "\\", "\\\\").c_str() << "\",";
+      callStackList.push_back(std::string(buffer));
+      //gLogFile << "\"" << ReplaceAll(buffer, "\\", "\\\\").c_str() << "\",";
     }
     else
     {
@@ -1455,9 +1455,9 @@ void StackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry& ent
                   entry.name);*/
       _snprintf_s(buffer, maxLen, "%s : %s (%d)", entry.lineFileName, entry.name, entry.lineNumber);
       //AddToCallTree(buffer);
-      callStack.push(std::string(buffer));
+      //callStack.push(std::string(buffer));
       callStackList.push_back(std::string(buffer));
-      gLogFile << "\"" << ReplaceAll(buffer, "\\", "\\\\") << "\"";
+      //gLogFile << "\"" << ReplaceAll(buffer, "\\", "\\\\") << "\"";
     }
     buffer[STACKWALK_MAX_NAMELEN - 1] = 0;
     OnOutput(buffer);

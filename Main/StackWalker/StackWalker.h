@@ -151,13 +151,13 @@ public:
   BOOL ShowObject(LPVOID pObject);
 
   //CallTreeNode                       callTree;
-  static std::set<std::string, int> createdNodes;
+  //static std::set<std::string, int> createdNodes;
   //void                       AddToCallTree(char* name);
 
-  std::stack<std::string> callStack;
+  //std::stack<std::string> callStack;
   std::vector<std::string> callStackList;
   //static std::map<std::string, std::vector<std::vector<std::string>>> callTrees;
-  std::ofstream gLogFile;
+  //std::ofstream gLogFile;
 
 #if _MSC_VER >= 1300
   // due to some reasons, the "STACKWALK_MAX_NAMELEN" must be declared as "public"

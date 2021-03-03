@@ -351,6 +351,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="CallTreeNode.cpp" />
+    <ClCompile Include="Profiler.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="JSONSerialiser.cpp" />
     <ClCompile Include="GraphCreator.cpp" />
@@ -360,6 +361,7 @@
     <ClInclude Include="c_plus_plus_serializer.h" />
     <ClInclude Include="GraphCreator.h" />
     <ClInclude Include="CallTreeNode.h" />
+    <ClInclude Include="Profiler.h" />
     <ClInclude Include="StackWalker.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

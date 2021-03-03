@@ -1,6 +1,9 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <iostream>
+
+//extern int gCount;
 
 class CallTreeNode
 {
@@ -15,13 +18,14 @@ public:
   {
     this->name = name;
     this->count = count;
-
+    //gCount += 1;
+    //std::cout << "Creating" << std::endl;
     //createdNodes.insert(name);
   }
 
   void SetParent(CallTreeNode parent) { this->parents.push_back(parent); }
 
-  CallTreeNode() {}
+  CallTreeNode() { /*gCount += 1;*/ }
 
   ~CallTreeNode()
   {
@@ -30,6 +34,8 @@ public:
     //  delete (&this->children[i]);
     //}*/
     //free(this);
+    //gCount -= 1;
+    //std::cout << "Deleting" << std::endl;
   }
 
   void AddChild(CallTreeNode child) { this->children.push_back(child); }

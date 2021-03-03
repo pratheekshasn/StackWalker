@@ -10,7 +10,9 @@
  *
  **********************************************************************/
 
+#include "CallTreeNode.h"
 #include "GraphCreator.h"
+#include "Profiler.h"
 #include "stackwalker.h"
 #include <DbgHelp.h>
 #include <chrono>
@@ -22,7 +24,6 @@
 #include <thread>
 #include <tlhelp32.h>
 #include <windows.h>
-#include <chrono>
 
 #define UNHANDLED_EXCEPTION_TEST
 #define EXCEPTION_FILTER_TEST
@@ -30,8 +31,11 @@
 #define THREADCOUNT 5
 HANDLE ghThreads[THREADCOUNT];
 HANDLE profThread;
-std::map<std::string, std::vector<std::vector<std::string>>>
-                           gCallTrees; // <threadName, callStackList>
+
+typedef std::vector<std::vector<std::string>> CallStackList;
+typedef std::map<std::string, CallStackList>  VICallStackMap;
+
+VICallStackMap             gCallTrees; // <threadName, callStackList>
 std::map<std::string, int> gFunctionCounts;
 
 //  Forward declarations:
@@ -168,9 +172,9 @@ void Func5(HANDLE threadHandle, std::string threadName)
   // See also: http://www.howzatt.demon.co.uk/articles/DebuggingInWin64.html
   if (GetThreadContext(threadHandle, &c) != FALSE)
   {
-    sw.gLogFile << "\"" << threadName << "\":[";
+    //sw.gLogFile << "\"" << threadName << "\":[";
     sw.ShowCallstack(threadHandle, &c);
-    sw.gLogFile << "]";
+    //sw.gLogFile << "]";
     // Build tree. Will have to make this thread-safe.
     // Maintain a set - sorted list for arranging based on sample count.
     // GetCurrentEC - for executing thread - from this, get DSP and VI name -- Make this root of this sub-tree.
@@ -636,10 +640,10 @@ void CreateFakeCallTree()
   for (int i = 97; i < 103; i++)
   {
     std::vector<std::vector<std::string>> callStacks;
-    for (int k = (i - 97); k < (i - 97 + 10); k++)
+    for (int k = (i - 97); k < (i - 97 + 1); k++)
     {
       std::vector<std::string> callStack;
-      for (int j = k; j < (k+20); j++)
+      for (int j = k; j < (k + 30); j++)
       {
         callStack.push_back(std::to_string(j)); // 5 elements in each call stack
       }
@@ -656,6 +660,8 @@ void CreateFakeCallTree()
   }
 }
 
+int gCount = 0;
+
 int main(int argc, _TCHAR* argv[])
 {
   //printf("\n\n\nShow a simple callstack of the current thread:\n\n\n");
@@ -665,6 +671,17 @@ int main(int argc, _TCHAR* argv[])
 
   ////WaitForAllThreads();
   //WaitForProfilerThread();
+
+  /*Profiler p;
+  
+  p.GetInstance(true);
+  p.StartStopProfilerThread(true);
+
+  for (size_t i = 0; i < 1000; i++)
+  {
+  }
+
+  p.StartStopProfilerThread(false);*/
 
   CreateFakeCallTree();
 
@@ -676,7 +693,9 @@ int main(int argc, _TCHAR* argv[])
 
   std::cout << "Time difference = "
             << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]"
-            << std::endl;
+            << std::endl
+            << "Total count: " << gCount;
+  gCallTrees.clear();
   //CollectCallStackForDifferentProcess();
   //TestDifferentProcess(21924);
   return 0;
