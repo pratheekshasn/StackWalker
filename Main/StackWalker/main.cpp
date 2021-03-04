@@ -643,7 +643,7 @@ void CreateFakeCallTree()
     for (int k = (i - 97); k < (i - 97 + 1); k++)
     {
       std::vector<std::string> callStack;
-      for (int j = k; j < (k + 30); j++)
+      for (int j = k; j < (k + 3); j++)
       {
         callStack.push_back(std::to_string(j)); // 5 elements in each call stack
       }

@@ -91,73 +91,48 @@ CallTreeNode SetPercentages(CallTreeNode* root, int rootSampleCount)
 std::shared_ptr<CallTreeNode> MergeNodes(std::shared_ptr<CallTreeNode> root)
 {
   /*
-    root ---->n1->n2->n3
-           -->n1->n2->n3
-
-    Merge branches and set count on the duplicate nodes.
-    */
-
-  std::set<std::string> funcSet = CreateSetOfChildren(root->children);
-
-  if (funcSet.size() != root->children.size())
+	root ---->n1->n2->n3
+	-->n1->n2->n3
+	Merge branches and set count on the duplicate nodes.
+	*/
+  std::set<std::string> funcSet = CreateSetOfChildren(root->GetChildren());
+  if (funcSet.size() != root->GetChildCount())
   {
     // Merge.
-
     std::set<std::string>::iterator iter;
     for (iter = funcSet.begin(); iter != funcSet.end(); iter++)
     {
-      std::string funcName = *iter;
-      //std::vector<CallTreeNode*> mergables;
+      std::string      funcName = *iter;
       std::vector<int> duplicateIndices;
-
-      for (int i = 0; i < root->children.size(); i++)
+      for (int i = 0; i < root->GetChildCount(); i++)
       {
-        if (funcName == root->children[i].name)
+        if (funcName == root->GetChildAt(i)->GetName())
           duplicateIndices.push_back((int)i);
       }
 
-      //CallTreeNode* first = mergables[0];
-
-      CallTreeNode* node = &(root->children[duplicateIndices[0]]);
+      //CallTreeNode*  childAt = root->GetChildAt(duplicateIndices[0]);
+      CallTreeNode* node = (root->GetChildAt(duplicateIndices[0])); // &(childAt);
       node->SetCount(max(1, (int)duplicateIndices.size()));
-
       for (size_t i = (duplicateIndices.size() - 1); i >= 1; i--)
       {
         // Add children of the node that will get erased.
-
-        CallTreeNode* nodeToErase = &root->children[duplicateIndices[i]];
-        for (size_t j = 0; j < nodeToErase->children.size(); j++)
+        //CallTreeNode  dupChild = (root->GetChildAt(duplicateIndices[i]));
+        CallTreeNode* nodeToErase = (root->GetChildAt(duplicateIndices[i])); // &dupChild;
+        for (int j = 0; j < nodeToErase->GetChildCount(); j++)
         {
-          //std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-
-          CallTreeNode* adoptedChild = &nodeToErase->children[j];
-          //adoptedChild->parents.erase()
-          //adoptedChild->parents.push_back(*node); // Why am I not using SetParent()? // Uncomment later
+          CallTreeNode* adoptedChild = nodeToErase->GetChildAt(j);
           node->AddChild(*adoptedChild);
-
-          /*std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
-          std::cout << "Time difference = "
-                    << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()
-                    << "[µs]" << std::endl;*/
-
-          //free(adoptedChild);
         }
-        //free(nodeToErase);
-        root->children.erase(root->children.begin() + duplicateIndices[i]);
+        root->DeleteChildAt(duplicateIndices[i]);
       }
-      //free(node);
     }
   }
-
-  for (size_t i = 0; i < root->children.size(); i++)
+  for (int i = 0; i < root->GetChildCount(); i++)
   {
     // This level has finished merging at this point. So count the number of samples.
-
-    auto updatedNode = MergeNodes(std::make_shared<CallTreeNode>(root->children[i]));
-    root->children[i] = *updatedNode;
+    auto updatedNode = MergeNodes(std::make_shared<CallTreeNode>(*(root->GetChildAt(i))));
+    root->SetUpdatedChildAt(i, *updatedNode);
   }
-
   return root;
 }
 
@@ -174,6 +149,9 @@ std::shared_ptr<CallTreeNode> CreateTree(std::string                           k
       root->AddChild(*branch); // Added * here.
     }
   }
+
+  //CallTreeNode* node = (root->GetChildAt(0)); // &(childAt);
+  //node->SetCount(5);
 
   // Merge nodes in branch.
   root = MergeNodes(root);

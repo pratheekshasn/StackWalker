@@ -1,7 +1,7 @@
 #pragma once
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
 
 //extern int gCount;
 
@@ -25,7 +25,9 @@ public:
 
   void SetParent(CallTreeNode parent) { this->parents.push_back(parent); }
 
-  CallTreeNode() { /*gCount += 1;*/ }
+  CallTreeNode()
+  { /*gCount += 1;*/
+  }
 
   ~CallTreeNode()
   {
@@ -38,11 +40,15 @@ public:
     //std::cout << "Deleting" << std::endl;
   }
 
-  void AddChild(CallTreeNode child) { this->children.push_back(child); }
-
-  void SetCount(int count) { this->count = count; }
-
-  int GetChildCount() { return (int)this->children.size(); }
+  void                      AddChild(CallTreeNode child) { children.push_back(child); }
+  void                      SetCount(int count) { this->count = count; }
+  int                       GetCount() { return count; }
+  int                       GetChildCount() { return (int)children.size(); }
+  std::string               GetName() { return name; }
+  std::vector<CallTreeNode> GetChildren() { return children; }
+  CallTreeNode*             GetChildAt(int i) { return &(children[i]); }
+  void                      DeleteChildAt(int i) { children.erase(children.begin() + i); }
+  void SetUpdatedChildAt(int i, CallTreeNode updatedNode) { children[i] = updatedNode; }
 
   std::string SerialiseToJSON();
   std::string GetSerialisedName();
