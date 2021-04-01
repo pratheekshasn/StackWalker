@@ -665,12 +665,12 @@ int gCount = 0;
 int main(int argc, _TCHAR* argv[])
 {
   //printf("\n\n\nShow a simple callstack of the current thread:\n\n\n");
-  //CreateMultipleThreads(); // Create these as a placeholder for LV threads.
+  CreateMultipleThreads(); // Create these as a placeholder for LV threads.
 
-  //CreateProfilerThread();
+  CreateProfilerThread();
 
-  ////WaitForAllThreads();
-  //WaitForProfilerThread();
+  //WaitForAllThreads();
+  WaitForProfilerThread();
 
   /*Profiler p;
   
@@ -683,7 +683,7 @@ int main(int argc, _TCHAR* argv[])
 
   p.StartStopProfilerThread(false);*/
 
-  CreateFakeCallTree();
+  //CreateFakeCallTree();
 
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 

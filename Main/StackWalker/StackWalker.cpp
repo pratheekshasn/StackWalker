@@ -1445,7 +1445,7 @@ void StackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry& ent
       /*_snprintf_s(buffer, maxLen, "%p (%s): %s: %s", (LPVOID)entry.offset, entry.moduleName,
                   entry.lineFileName, entry.name);*/
       //_snprintf_s(buffer, maxLen, "%s (%d): %s", entry.lineFileName, entry.lineNumber, entry.name);
-      _snprintf_s(buffer, maxLen, "%s : %s (%d)", entry.lineFileName, entry.name, entry.lineNumber);
+      _snprintf_s(buffer, maxLen, "%s : %s (%d) %s", entry.lineFileName, entry.name, entry.lineNumber, entry.moduleName);
       callStackList.push_back(std::string(buffer));
       //gLogFile << "\"" << ReplaceAll(buffer, "\\", "\\\\").c_str() << "\",";
     }
@@ -1453,7 +1453,8 @@ void StackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry& ent
     {
       /*_snprintf_s(buffer, maxLen, "%s (%d): %s", entry.lineFileName, entry.lineNumber,
                   entry.name);*/
-      _snprintf_s(buffer, maxLen, "%s : %s (%d)", entry.lineFileName, entry.name, entry.lineNumber);
+      _snprintf_s(buffer, maxLen, "%s : %s (%d) %s", entry.lineFileName, entry.name, entry.lineNumber,
+                  entry.moduleName);
       //AddToCallTree(buffer);
       //callStack.push(std::string(buffer));
       callStackList.push_back(std::string(buffer));
